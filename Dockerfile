@@ -70,13 +70,13 @@ RUN wget -O numpy.zip https://github.com/numpy/numpy/releases/download/v1.17.2/n
 #RUN pip install numpy
 
 WORKDIR /
-ENV OPENCV_VERSION="4.1.1"
+ENV OPENCV_VERSION="3.4.7"
 RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip \
 && wget -O opencv_contrib-${OPENCV_VERSION}.zip https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip \
 && unzip opencv-${OPENCV_VERSION}.zip \
 && unzip opencv_contrib-${OPENCV_VERSION}.zip \
-&& mv opencv-4.1.1 opencv \
-&& mv opencv_contrib-4.1.1 opencv_contrib \
+&& mv opencv-${OPENCV_VERSION} opencv \
+&& mv opencv_contrib-${OPENCV_VERSION} opencv_contrib \
 && mkdir /opencv/cmake_binary \
 && cd /opencv/cmake_binary \
 && cmake -DBUILD_TIFF=ON \
@@ -94,7 +94,7 @@ RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archiv
   -DBUILD_TESTS=OFF \
   -DBUILD_PERF_TESTS=OFF \
   -DCMAKE_BUILD_TYPE=RELEASE \
-  -DCMAKE_INSTALL_PREFIX=$(python3.7 -c "import sys; print(sys.prefix)") \
+  -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DPYTHON_EXECUTABLE=$(which python3.7) \
   -DPYTHON_INCLUDE_DIR=$(python3.7 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
   -DPYTHON_PACKAGES_PATH=$(python3.7 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
@@ -104,7 +104,6 @@ RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archiv
 && rm /opencv_contrib-${OPENCV_VERSION}.zip \
 && rm -r /opencv \
 && rm -r /opencv_contrib
-RUN ln -s \
-#/usr/lib/python3.7/dist-packages/cv2/python-3.7/cv2.cpython-37m-aarch64-linux-gnu.so
+RUN ln -s \ 
 	/usr/local/lib/python3.7/dist-packages/cv2/python-3.7/cv2.cpython-37m-aarch64-linux-gnu.so \
-  	/usr/local/lib/python3.7/site-packages/1
+	/usr/local/lib/python3.7/dist-packages/cv2/python-3.7/cv2.so
