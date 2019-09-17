@@ -1,5 +1,5 @@
 FROM python:3.7
-MAINTAINER Gaiar Baimuratov <gaiar@baimuratov.ru>
+LABEL maintainer="gaiar@baimuratov.ru"
 
 RUN apt-get update \
     && apt-get install -y \
@@ -27,8 +27,6 @@ RUN apt-get update \
         libatlas-base-dev gfortran \
         libhdf5-dev libhdf5-serial-dev libhdf5-103 \
         libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 \
-
-
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install numpy
@@ -44,11 +42,11 @@ RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archiv
 && mkdir /opencv/cmake_binary \
 && cd /opencv/cmake_binary \
 && cmake -DBUILD_TIFF=ON \
-  -D OPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
-  -D ENABLE_NEON=ON \
-  -D ENABLE_VFPV3=ON \
-  -D OPENCV_ENABLE_NONFREE=ON \
-  -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
+  -DOPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
+  -DENABLE_NEON=ON \
+  -DENABLE_VFPV3=ON \
+  -DOPENCV_ENABLE_NONFREE=ON \
+  -DCMAKE_SHARED_LINKER_FLAGS=-latomic \
   -DBUILD_opencv_java=OFF \
   -DWITH_CUDA=OFF \
   -DWITH_OPENGL=ON \
@@ -66,8 +64,10 @@ RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archiv
   -DPYTHON_PACKAGES_PATH=$(python3.7 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
   .. \
 && make install \
-&& rm /${OPENCV_VERSION}.zip \
-&& rm -r /opencv-${OPENCV_VERSION}
+&& rm /opencv-${OPENCV_VERSION}.zip \
+&& rm /opencv_contrib-${OPENCV_VERSION}.zip \
+&& rm -r /opencv \
+&& rm -r /opencv_contrib
 RUN ln -s \
   /usr/local/python/cv2/python-3.7/cv2.cpython-37m-aarch64-linux-gnu.so \
   /usr/local/lib/python3.7/site-packages/cv2.so
