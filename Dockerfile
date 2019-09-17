@@ -1,8 +1,19 @@
-FROM python:3.7
+FROM arm64v8/debian:buster
 LABEL maintainer="gaiar@baimuratov.ru"
 
-RUN apt-get update \
-    && apt-get install -y \
+ENV DEBIAN_FRONTEND noninteractive 
+
+RUN apt-get update && apt-get install -yq --no-install-recommends apt-utils
+RUN apt-get install -yq --no-install-recommends \
+	python3-dev \
+	python3.7 \
+	python3-pip \
+	python3-setuptools \
+	libssl-dev \
+	libffi-dev \
+	libblas3 \
+	liblapack3 \
+	cython3 \
         build-essential \
         cmake \
         git \
@@ -18,18 +29,45 @@ RUN apt-get update \
         libtiff-dev \
         libavformat-dev \
         libpq-dev \
-        build-essential \
-        libjpeg-dev libtiff5-dev libjasper-dev libpng-dev \
-        libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev \
-        libfontconfig1-dev libcairo2-dev \
-        libgdk-pixbuf2.0-dev libpango1.0-dev \
-        libgtk2.0-dev libgtk-3-dev \
-        libatlas-base-dev gfortran \
-        libhdf5-dev libhdf5-serial-dev libhdf5-103 \
-        libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 \
+        libjpeg-dev \
+	libtiff5-dev \
+	libjpeg62-turbo-dev \
+	libpng-dev \
+        libavcodec-dev \
+	libavformat-dev \
+	libswscale-dev \
+	libv4l-dev \
+	libxvidcore-dev \
+	libx264-dev \
+        libfontconfig1-dev \
+	libcairo2-dev \
+        libgdk-pixbuf2.0-dev \
+	libpango1.0-dev \
+        libgtk2.0-dev \
+	libgtk-3-dev \
+	libblis-dev \
+	libopenblas-dev \
+        libatlas-base-dev \
+	gfortran \
+        libhdf5-dev \
+	libhdf5-serial-dev \
+	libhdf5-103 \
+        libqtgui4 \
+	libqtwebkit4 \
+	libqt4-test \
+	python3-pyqt5 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install numpy
+#RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+#    locale-gen
+
+RUN wget -O numpy.zip https://github.com/numpy/numpy/releases/download/v1.17.2/numpy-1.17.2.zip \
+	&& unzip numpy.zip \
+	&& mv numpy-1.17.2 numpy \
+	&& cd /numpy \
+	&& NPY_NUM_BUILD_JOBS=6 python3 setup.py install 
+
+#RUN pip install numpy
 
 WORKDIR /
 ENV OPENCV_VERSION="4.1.1"
@@ -43,8 +81,6 @@ RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archiv
 && cd /opencv/cmake_binary \
 && cmake -DBUILD_TIFF=ON \
   -DOPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
-  -DENABLE_NEON=ON \
-  -DENABLE_VFPV3=ON \
   -DOPENCV_ENABLE_NONFREE=ON \
   -DCMAKE_SHARED_LINKER_FLAGS=-latomic \
   -DBUILD_opencv_java=OFF \
@@ -63,11 +99,12 @@ RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archiv
   -DPYTHON_INCLUDE_DIR=$(python3.7 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
   -DPYTHON_PACKAGES_PATH=$(python3.7 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
   .. \
-&& make install \
+&& make -j$(nproc) install \
 && rm /opencv-${OPENCV_VERSION}.zip \
 && rm /opencv_contrib-${OPENCV_VERSION}.zip \
 && rm -r /opencv \
 && rm -r /opencv_contrib
 RUN ln -s \
-  /usr/local/python/cv2/python-3.7/cv2.cpython-37m-aarch64-linux-gnu.so \
-  /usr/local/lib/python3.7/site-packages/cv2.so
+#/usr/lib/python3.7/dist-packages/cv2/python-3.7/cv2.cpython-37m-aarch64-linux-gnu.so
+	/usr/local/lib/python3.7/dist-packages/cv2/python-3.7/cv2.cpython-37m-aarch64-linux-gnu.so \
+  	/usr/local/lib/python3.7/site-packages/1
