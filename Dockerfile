@@ -70,7 +70,7 @@ RUN wget -O numpy.zip https://github.com/numpy/numpy/releases/download/v1.17.2/n
 #RUN pip install numpy
 
 WORKDIR /
-ENV OPENCV_VERSION="3.4.7"
+ENV OPENCV_VERSION="4.1.2"
 RUN wget -O opencv-${OPENCV_VERSION}.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip \
 && wget -O opencv_contrib-${OPENCV_VERSION}.zip https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip \
 && unzip opencv-${OPENCV_VERSION}.zip \
