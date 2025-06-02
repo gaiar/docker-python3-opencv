@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 MAINTAINER Gaiar Baimuratov <gaiar@baimuratov.ru>
 
 RUN ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
@@ -6,9 +6,9 @@ RUN apt-get update \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	software-properties-common \
 	python3-pip \
-	python3.8-dev \
-	python3.8-distutils \
-	python3.8-venv \
+	python3.10-dev \
+	python3.10-distutils \
+	python3.10-venv \
         build-essential \
         cmake \
 	ccache \
@@ -33,7 +33,7 @@ RUN apt-get update \
 RUN pip3 install numpy selenium 
 
 WORKDIR /
-ENV OPENCV_VERSION="4.5.3"
+ENV OPENCV_VERSION="4.8.1"
 RUN wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip \
 && unzip ${OPENCV_VERSION}.zip \
 && rm ${OPENCV_VERSION}.zip
@@ -57,10 +57,10 @@ RUN wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip \
   -DBUILD_TESTS=OFF \
   -DBUILD_PERF_TESTS=OFF \
   -DCMAKE_BUILD_TYPE=RELEASE \
-  -DCMAKE_INSTALL_PREFIX=$(python3.8 -c "import sys; print(sys.prefix)") \
-  -DPYTHON_EXECUTABLE=$(which python3.8) \
-  -DPYTHON_INCLUDE_DIR=$(python3.8 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
-  -DPYTHON_PACKAGES_PATH=$(python3.8 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+  -DCMAKE_INSTALL_PREFIX=$(python3.10 -c "import sys; print(sys.prefix)") \
+  -DPYTHON_EXECUTABLE=$(which python3.10) \
+  -DPYTHON_INCLUDE_DIR=$(python3.10 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+  -DPYTHON_PACKAGES_PATH=$(python3.10 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
   .. \
 && make install -j$(nproc) \
 && rm /${OPENCV_VERSION}.zip \
@@ -69,5 +69,5 @@ RUN wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip \
 #  /usr/local/python/cv2/python-3.8/cv2.cpython-38-x86_64-linux-gnu.so \
 #  /usr/local/lib/python3.8/site-packages/cv2.so
 RUN ln -s \
-	/usr/local/lib/python3.8/dist-packages/cv2.cpython-38-x86_64-linux-gnu.so \
-	/usr/local/lib/python3.8/dist-packages/cv2.so
+	/usr/local/lib/python3.10/dist-packages/cv2.cpython-310-x86_64-linux-gnu.so \
+	/usr/local/lib/python3.10/dist-packages/cv2.so
