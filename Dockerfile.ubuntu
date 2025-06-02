@@ -31,14 +31,26 @@ RUN apt-get update \
         libpq-dev \
 	libmkl-full-dev \
 	firefox \
+	xvfb \
+	libgtk-3-0 \
+	libdbus-glib-1-2 \
+	libxt6 \
+	libxss1 \
+	libgconf-2-4 \
+	libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install GeckoDriver manually
-RUN GECKODRIVER_VERSION=0.34.0 \
+# Install GeckoDriver manually with compatible version
+RUN GECKODRIVER_VERSION=0.36.0 \
     && wget -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz" \
     && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
     && chmod +x /usr/local/bin/geckodriver \
     && rm /tmp/geckodriver.tar.gz
+
+# Set environment variables for Firefox in container
+ENV DISPLAY=:99
+ENV MOZ_HEADLESS=1
+ENV FIREFOX_NO_REMOTE=1
 
 RUN pip3 install --no-cache-dir numpy selenium 
 
