@@ -26,8 +26,10 @@ RUN apt-get update \
         libavformat-dev \
         libpq-dev \
 	libmkl-full-dev \
-	firefoxdriver \
-	firefox-geckodriver \
+	firefox \
+    && add-apt-repository ppa:mozilla-team/firefox-next \
+    && apt-get update \
+    && apt-get install -y firefox-geckodriver \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install numpy selenium 
