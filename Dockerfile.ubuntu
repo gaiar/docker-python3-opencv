@@ -27,10 +27,14 @@ RUN apt-get update \
         libpq-dev \
 	libmkl-full-dev \
 	firefox \
-    && add-apt-repository ppa:mozilla-team/firefox-next \
-    && apt-get update \
-    && apt-get install -y firefox-geckodriver \
     && rm -rf /var/lib/apt/lists/*
+
+# Install GeckoDriver manually
+RUN GECKODRIVER_VERSION=0.34.0 \
+    && wget -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz" \
+    && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
+    && chmod +x /usr/local/bin/geckodriver \
+    && rm /tmp/geckodriver.tar.gz
 
 RUN pip3 install numpy selenium 
 
